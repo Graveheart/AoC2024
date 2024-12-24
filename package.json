@@ -1,0 +1,15 @@
+{
+  "dependencies": {
+    "@total-typescript/ts-reset": "^0.5.1"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^1.9.4",
+    "bun-types": "^1.1.42"
+  },
+  "name": "aoc-2024",
+  "module": "index.ts",
+  "type": "module",
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  }
+}
