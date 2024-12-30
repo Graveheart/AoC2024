@@ -1,3 +1,6 @@
+import { parseArgs } from "node:util";
+import path from "node:path";
+
 declare global {
 	interface Array<T> {
 		sum(): T;
@@ -30,4 +33,37 @@ String.prototype.parseNumbers = function () {
 		throw new Error("String is empty");
 	}
 	return [...this.matchAll(digitsRegexp)].map((match) => Number(match[0]));
+};
+
+export const { values: argValues } = parseArgs({
+	args: Bun.argv,
+	options: {
+		defaultInput: {
+			type: "boolean",
+		},
+		part: {
+			type: "string",
+			default: "1",
+		},
+	},
+	strict: true,
+	allowPositionals: true,
+});
+
+function getDay(pathName: string) {
+	const res = path.basename(path.resolve(pathName));
+	return res.charAt(0).toUpperCase() + res.slice(1);
+}
+
+export const showResult = (result: number, part = 1): void => {
+	const dayToDisplay = getDay(".");
+	console.log("\x1b[33m%s\x1b[0m", `${dayToDisplay}, part ${part}: ${result}`);
+};
+
+export const measureExecutionTime = <T>(fn: () => T): void => {
+	const startTimeNs = Bun.nanoseconds();
+	fn();
+	const endTimeNs = Bun.nanoseconds();
+	const durationNs = endTimeNs - startTimeNs;
+	console.log(`Duration: ${durationNs} nanoseconds`);
 };

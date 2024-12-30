@@ -1,20 +1,6 @@
-import { parseArgs } from "node:util";
-const defaultInput = await Bun.file("input.txt").text();
+import { showResult } from "../utils";
 
-const { values } = parseArgs({
-	args: Bun.argv,
-	options: {
-		defaultInput: {
-			type: "boolean",
-		},
-		part: {
-			type: "string",
-			default: "1",
-		},
-	},
-	strict: true,
-	allowPositionals: true,
-});
+const defaultInput = await Bun.file("input.txt").text();
 
 const mapInput = (input: string) => {
 	const lSide: number[] = [];
@@ -39,29 +25,18 @@ export const findDistance = (input: string = defaultInput) => {
 	return distance;
 };
 
-export const findSimilarity = (input: string = defaultInput) => {
+export const findSimilarity = (input: string = defaultInput): number => {
 	const { lSide, rSide } = mapInput(input);
 	const similarityMap = new Map<number, number>();
-	const searchSimilarity = (searchValue: number) => {
-		if (similarityMap.has(searchValue)) {
-			return similarityMap.get(searchValue) as number;
-		}
-		const valSimilarity = rSide.filter((x) => x === searchValue).length;
-		similarityMap.set(searchValue, valSimilarity);
-		return valSimilarity;
-	};
+	rSide.forEach((val) => {
+		similarityMap.set(val, (similarityMap.get(val) ?? 0) + 1);
+	});
 	const distance = lSide.reduce(
-		(acc, val, i) => acc + val * searchSimilarity(val),
+		(acc, val) => acc + val * (similarityMap.get(val) ?? 0),
 		0,
 	);
 	return distance;
 };
 
-let partToExecute = findDistance;
-if (values.part === "2") {
-	partToExecute = findSimilarity;
-}
-
-if (values.defaultInput) {
-	console.log(partToExecute());
-}
+showResult(findDistance(), 1);
+showResult(findSimilarity(), 2);
